@@ -3,7 +3,7 @@ name: Compilar APK
 
 on:
   push:
-    branches: [main, principal]
+    branches: [main, master, principal]
   workflow_dispatch:
 
 jobs:
@@ -20,18 +20,17 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Configurar Android
-        uses: android-actions/setup-android@v3
+      - name: Instalar Android SDK
+        run: |
+          echo "y" | sdkmanager --licenses > /dev/null
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Instalar SDK
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
-
-      - name: Compilar APK
+      - name: Configurar Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-      - name: Generar APK
+      - name: Compilar aplicación
         run: gradle assembleDebug
 
       - name: Guardar APK
